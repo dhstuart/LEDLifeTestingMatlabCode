@@ -91,25 +91,14 @@ ylimTollerance.CCT = 200;
 % ylimit.Ra = [2500 3200];
 
 for modelIndex = 1:20
-    for i = 1:length(properties)
+    for iProperties = 1:length(properties)
         tic
-        tempProperty = vertcat(data(modelIndex,:).(properties{i}))';
+        tempProperty = vertcat(data(modelIndex,:).(properties{iProperties}))';
         hours = vertcat(data(modelIndex,:).hours)';
         orientation = vertcat(data(modelIndex,:).orientation);
         housing = vertcat(data(modelIndex,:).housing);
         dimming = vertcat(data(modelIndex,:).dimming);
-        
-        %         orientation = cellfun(@(x) (x(1)),{data(modelIndex,:).orientation});
-        %         housing = cellfun(@(x) (x(1)),{data(modelIndex,:).housing});
-        %         dimming = cellfun(@(x) (x(1)),{data(modelIndex,:).dimming});
-        % index.baseDown = orientation,'d');
-        % index.baseUp = strfind(orientation,'u');
-        % index.baseHorizontal = strfind(orientation,'h');
-        % index.housing = find(housing==1);
-        % index.openAir = find(housing==0);
-        % index.dimming = find(dimming==1);
-        % index.noDimming = find(dimming==0);
-        
+              
         opConditions = { %(markerTypeList) (lineStyle)
             find(orientation=='u' & housing==0 & dimming==0),... % 1	5	Base-up	Open Air	30 on / 5 off	100%
             find(orientation=='d' & housing==0 & dimming==0),...% 2	5	Base-Down	Open Air	30 on / 5 off	100%
@@ -122,13 +111,10 @@ for modelIndex = 1:20
             % 9	1	Base-up	Open Air	always on	100%%
             };
         
-        %         colors = distinguishable_colors(length(opConditions));
-        
+    
         % %% -----------Determine when lamps burned out ------------------------
         offInd = zeros(1,31);
         for dum = 1:31
-            %             temp = find(isnan(data(modelIndex,dum).(properties{i})));
-            %             temp = find(isnan(data(modelIndex,dum).luminousFlux(i)));
             photometricLamps(dum) = data(modelIndex,dum).rack==1 & (data(modelIndex,dum).branch==2|data(modelIndex,dum).branch==3|data(modelIndex,dum).branch==4); %photometric lamps don't have interim measurements so are marked by NaN,but not dead
             temp = find(isnan(data(modelIndex,dum).luminousFlux) &~ photometricLamps(dum));
             if ~isempty(temp)
@@ -138,17 +124,17 @@ for modelIndex = 1:20
         
         
         
-        for twofig = 1:2
+        for iFigure = 1:2    %split subplots between two pages
             len = length(opConditions);
             figureCoordinates = [10 10 1000 1100];
             fig = figure('Position',figureCoordinates,'Color',[1 1 1]);
-            for opCond = 1:len/2
-                jj = (twofig-1)*len/2+opCond;
-                subPlotHandle(opCond) = subplot(2,2,opCond);
+            for iSubPlot = 1:len/2
+                iOpConditionHighlighted = (iFigure-1)*len/2+iSubPlot;
+                subPlotHandle(iSubPlot) = subplot(2,2,iSubPlot);
                 
                 %----------plot manufactured rated value--------------
                 spec_color = [.5 .5 .5];
-                ratedPropertyName = ['rated_' properties{i}];
+                ratedPropertyName = ['rated_' properties{iProperties}];
                 if isfield(data(modelIndex,1),ratedPropertyName)&&~isnan(data(modelIndex,1).(ratedPropertyName)(1))
                     ratedValue = data(modelIndex,1).(ratedPropertyName);
                     handleVector{1,1} = plot([hours(1,1) hours(end,1)],[ratedValue ratedValue],...
@@ -161,66 +147,66 @@ for modelIndex = 1:20
                 end
                 
                 %----------plot data---------------------
-                iIndexAll = tempProperty(1,:);
-                fIndexAll = tempProperty(end,:);
-                initialMeanAll(modelIndex) = mean(iIndexAll(~isnan(iIndexAll)));
-                initialStdAll(modelIndex) = std(iIndexAll(~isnan(iIndexAll)));
-                finalMeanAll(modelIndex) = mean(fIndexAll(~isnan(fIndexAll)));
-                finalStdAll(modelIndex) = std(fIndexAll(~isnan(fIndexAll)));
-                for j = 1:length(opConditions)
-                    if ~isempty(opConditions{j})
-                        y = tempProperty(:,opConditions{j});
-                        x = hours(:,opConditions{j});
+                initialIndexAll = tempProperty(1,:);
+                finalIndexAll = tempProperty(end,:);
+                initialMeanAll(modelIndex) = mean(initialIndexAll(~isnan(initialIndexAll)));
+                initialStdAll(modelIndex) = std(initialIndexAll(~isnan(initialIndexAll)));
+                finalMeanAll(modelIndex) = mean(finalIndexAll(~isnan(finalIndexAll)));
+                finalStdAll(modelIndex) = std(finalIndexAll(~isnan(finalIndexAll)));
+                for iOpConditions = 1:length(opConditions)
+                    if ~isempty(opConditions{iOpConditions})
+                        y = tempProperty(:,opConditions{iOpConditions});
+                        x = hours(:,opConditions{iOpConditions});
                         %get statistics on delta on properties
-                        iIndex = y(1,:);
-                        fIndex = y(end,:);
-                        initialMean(modelIndex,j) = mean(iIndex(~isnan(iIndex)));
-                        initialStd(modelIndex,j) = std(iIndex(~isnan(iIndex)));
-                        finalMean(modelIndex,j) = mean(fIndex(~isnan(fIndex)));
-                        finalStd(modelIndex,j) = std(fIndex(~isnan(fIndex)));
+                        iInitial = y(1,:);
+                        iFinal = y(end,:);
+                        initialMean(modelIndex,iOpConditions) = mean(iInitial(~isnan(iInitial)));
+                        initialStd(modelIndex,iOpConditions) = std(iInitial(~isnan(iInitial)));
+                        finalMean(modelIndex,iOpConditions) = mean(iFinal(~isnan(iFinal)));
+                        finalStd(modelIndex,iOpConditions) = std(iFinal(~isnan(iFinal)));
                         
-                        
-                        
-                        for k = 1:size(y,2)
-                            if j == 1 && k == 1      %no min max on first itteration
-                                minMax = [min(y(:,k)) max(y(:,k))];
+                        for iHours = 1:size(y,2)
+                            if iOpConditions == 1 && iHours == 1      %no min max on first itteration
+                                minMax = [min(y(:,iHours)) max(y(:,iHours))];
                             else
-                                minMax = [min([y(:,k); minMax(1)]) max([y(:,k); minMax(2)])];   %set the limits as symmetric about the rated value
+                                minMax = [min([y(:,iHours); minMax(1)]) max([y(:,iHours); minMax(2)])];   %set the limits as symmetric about the rated value
                             end
                             
-                            xflip = [x(1 : end - 1,k); flipud(x(:,k))];
-                            yflip = [y(1 : end - 1,k); flipud(y(:,k))];
-                            if j == jj
-                                handleVector{j+1,k} = patch(xflip, yflip, 'r', ...
+                            %mirror x and y points to create patch line instead of polygon
+                            xMirrored = [x(1 : end - 1,iHours); flipud(x(:,iHours))];
+                            yMirrored = [y(1 : end - 1,iHours); flipud(y(:,iHours))];
+                            if iOpConditions == iOpConditionHighlighted
+                                handleVector{iOpConditions+1,iHours} = patch(xMirrored, yMirrored, 'r', ...
                                     'EdgeAlpha', 1, ...
                                     'FaceColor', 'none', ...
-                                    'Marker', markerType(plotStyle(j,3)), ...
+                                    'Marker', markerType(plotStyle(iOpConditions,3)), ...
                                     'MarkerSize',markerSize, ...
-                                    'LineStyle',lineStyle{plotStyle(j,1)}, ...
-                                    'EdgeColor',colors(plotStyle(j,2),:), ...
+                                    'LineStyle',lineStyle{plotStyle(iOpConditions,1)}, ...
+                                    'EdgeColor',colors(plotStyle(iOpConditions,2),:), ...
                                     'LineWidth', lineWidth(1));
                                 
                                 %-------------- mark failures -----------------
-                                whenSamplesFailed = offInd(opConditions{j});
+                                whenSamplesFailed = offInd(opConditions{iOpConditions});
                                 samplesFailed = find(whenSamplesFailed~=0);
                                 
                                 if ~isempty(samplesFailed)
-                                    for k = 1:length(samplesFailed)
-                                        plot(x(whenSamplesFailed(samplesFailed(k))-1,samplesFailed(k)), y(whenSamplesFailed(samplesFailed(k))-1,samplesFailed(k)),...
-                                            'Color',colors(plotStyle(j,2),:),...
+                                    for iHours = 1:length(samplesFailed)
+                                        plot(x(whenSamplesFailed(samplesFailed(iHours))-1,samplesFailed(iHours)),...
+                                            y(whenSamplesFailed(samplesFailed(iHours))-1,samplesFailed(iHours)),...
+                                            'Color',colors(plotStyle(iOpConditions,2),:),...
                                             'LineWidth', lineWidth(1),...
                                             'Marker','o',...
                                             'MarkerSize',16); %plot an X at the previous good point
                                     end
                                 end
                             else
-                                handleVector{j+1,k} = patch(xflip, yflip, 'r', ...
+                                handleVector{iOpConditions+1,iHours} = patch(xMirrored, yMirrored, 'r', ...
                                     'EdgeAlpha', 0.05, ...
                                     'FaceColor', 'none', ...
                                     'Marker', 'none',... markerType(plotStyle(j,3)), ...
                                     'MarkerSize',markerSize, ...
-                                    'LineStyle',lineStyle{plotStyle(j,1)}, ...
-                                    'EdgeColor',colors(plotStyle(j,2),:), ...
+                                    'LineStyle',lineStyle{plotStyle(iOpConditions,1)}, ...
+                                    'EdgeColor',colors(plotStyle(iOpConditions,2),:), ...
                                     'LineWidth', lineWidth(1));
                             end
                             hold all
@@ -236,14 +222,13 @@ for modelIndex = 1:20
                     ylim([minMax(1)-abs(0.05*minMax(1)) minMax(2)+abs(0.05*minMax(2))])
                 elseif diff(minMax)==0
                 else
-                    ylim([ratedValue-ylimTollerance ratedValue+ylimTollerance])
-                    
+                    ylim([ratedValue-ylimTollerance ratedValue+ylimTollerance])              
                 end
                 %             set(gca,'Position', [0.13 0.11 0.5 0.8])    %ensures that axes box is the same size regardless of legend content
                 xlabel('Hours')
-                ylabel(ylabelText{i})
+                ylabel(ylabelText{iProperties})
                 %             title(['Product ' num2str(modelIndex) ' - ' properties{i}])
-                title(['Product ' num2str(modelIndex) ' - ' opConditionsNames{jj+1}])
+                title(['Product ' num2str(modelIndex) ' - ' opConditionsNames{iOpConditionHighlighted+1}])
             end
             h(1) = plot(p,p,'Color',spec_color, 'LineWidth',3,'LineStyle','--');
             h(2) = plot(p,p,'Color', colors(1,:),'LineWidth', lineWidth(1));
@@ -256,31 +241,31 @@ for modelIndex = 1:20
             h(9) = plot(p,p,'k', 'Marker', 'o','MarkerSize',16,'LineStyle','none');
             
             if isnan(ratedValue)    %change plot configuration if rated values were not given
-                leg = legend(h(2:9),{'Base-Up','Base-Down','Base-Horizontal','Open-Air','Enclosed','No Dim','50% Dim','Failure'},...
+                legendHandle = legend(h(2:9),{'Base-Up','Base-Down','Base-Horizontal','Open-Air','Enclosed','No Dim','50% Dim','Failure'},...
                     'Location','SouthEastOutside');
             else
-                leg = legend(h,{'Manufacturer Rated Value','Base-Up','Base-Down','Base-Horizontal','Open-Air','Enclosed','No Dim',...
+                legendHandle = legend(h,{'Manufacturer Rated Value','Base-Up','Base-Down','Base-Horizontal','Open-Air','Enclosed','No Dim',...
                     '50% Dim','failure'},...
                     'Location','SouthOutside');
             end
-            legPos = get(leg,'Position');
+            legendPosition = get(legendHandle,'Position');
             subPlotSize = [.335 .286];
             set(subPlotHandle(1),'Position',[0.094 0.642 subPlotSize])
             set(subPlotHandle(2),'Position',[0.094 0.271 subPlotSize])
             set(subPlotHandle(3),'Position',[0.595 0.642 subPlotSize])
             set(subPlotHandle(4),'Position',[0.595 0.271 subPlotSize])
             
-            set(leg,'Position',[0.400 0.052 legPos(3) legPos(4)])
+            set(legendHandle,'Position',[0.400 0.052 legendPosition(3) legendPosition(4)])
             annotation('textbox',[0.282 0.962 0.457 0.029],...
-                'String', [titleText{i}, ' - Product ', num2str(modelIndex)],...
+                'String', [titleText{iProperties}, ' - Product ', num2str(modelIndex)],...
                 'LineStyle','none',...
                 'HorizontalAlignment', 'center',...
                 'FontSize', 16)
-            export_fig(gcf,[pwd '\Plots\product ' num2str(modelIndex) ' - ' num2str(twofig) ' ' properties{i}]);%,'-r500')
+            export_fig(gcf,[pwd '\Plots\product ' num2str(modelIndex) ' - ' num2str(iFigure) ' ' properties{iProperties}]);%,'-r500')
             close(gcf)
         end
         elapsedTime = toc;
-        itterationsLeft = (20*length(properties)*2) - ((modelIndex-1)*length(properties)*2+(i-1)*2);
+        itterationsLeft = (20*length(properties)*2) - ((modelIndex-1)*length(properties)*2+(iProperties-1)*2);
         timeLeft = itterationsLeft*toc/60;
         disp(['time left is ' num2str(timeLeft) ' minutes'])
     end
