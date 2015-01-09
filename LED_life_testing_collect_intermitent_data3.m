@@ -31,13 +31,18 @@
 close all
 
 clc
-clear all
+% clear all
+p = path;
+p1 = genpath([pwd '\Functions']);
+p2 = genpath([pwd '\Data']);
+addpath([p1 p2]);
+
 
 %need to run the following first:
 % *grabElectricalData
 % *grabPhotometricData2mSpheres
 
-current = 'C:\Users\dhstuart\Dropbox\CLTC\LED life testing\photometric data';
+% current = 'C:\Users\dhstuart\Dropbox\CLTC\LED life testing\photometric data';
 directory = 'C:\Users\dhstuart\Box Sync';
 hours = [0 1000 2000 3000];
 folderListOneMeter = {
@@ -52,7 +57,7 @@ folderListFlicker = {
     'LT Flicker - 3000 hr Data'};
 
 %%
-cd(current)
+% cd(current)
 load('testMatrix.mat'); %in "photometric data" folder
 load('electricalData.mat'); %in "photometric data" folder
 load('photometricData2mSpheres.mat'); %in "photometric data" folder
@@ -112,7 +117,7 @@ for i = 1:length(hours)
             disp(['hours ' num2str(hours(i)) ' - model ' num2str(model) ' - sample ' num2str(sample)])
             %             cd([directory '\' folderList{i}]);
             %             files = dir('*.csv');
-            cd(current)
+%             cd(current)
             fileName = ['LT ' sprintf('%02.0f',model) '-' sprintf('%02.0f',sample) '.csv'];
             %             fileList = {files.name}';
             %             for j = 1:length(fileList)
@@ -124,9 +129,9 @@ for i = 1:length(hours)
             %add photometric data (one file per sample and test period)
             %                 temp = grabPhotometricData([directory '\' folderList{i} '\' fileList{j}]);
             %% -------------------one meter sphere data-----------------------
-            path = [directory '\' folderListOneMeter{i} '\' fileName];
-            if exist(path)==2
-                temp = grabPhotometricData(path);
+            tempPath = [directory '\' folderListOneMeter{i} '\' fileName];
+            if exist(tempPath)==2
+                temp = grabPhotometricData(tempPath);
                 tempFieldNames = fieldnames(temp);
                 for dum = 1:length(tempFieldNames)
                     data(model,sample).(tempFieldNames{dum})(:,i) = temp.(tempFieldNames{dum});
@@ -138,11 +143,11 @@ for i = 1:length(hours)
             end
             %% ---------------flicker data------------------
             fileName = ['LT ' sprintf('%02.0f',model) '-' sprintf('%02.0f',sample) '_PS_100_light.csv'];
-            path = [directory '\' folderListFlicker{i} '\' fileName];
+            tempPath = [directory '\' folderListFlicker{i} '\' fileName];
             printPlot = 0;
             savePlot = 0;
-            if exist(path)==2
-                metrics = flicker_process_data_simplified(path, hours(i), printPlot,savePlot);
+            if exist(tempPath)==2
+                metrics = flicker_process_data_simplified(tempPath, hours(i), printPlot,savePlot);
                 tempFieldNames = fieldnames(metrics);
                 for dum = 1:length(tempFieldNames)
                     data(model,sample).(tempFieldNames{dum})(:,i) = metrics.(tempFieldNames{dum});
@@ -163,4 +168,5 @@ for i = 1:length(hours)
 end
 
 %%
-save('LEDLifeTestingData2.mat','data')
+save('Data\LEDLifeTestingData2.mat','data')
+path(p);

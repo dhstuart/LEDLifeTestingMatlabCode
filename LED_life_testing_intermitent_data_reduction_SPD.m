@@ -4,8 +4,8 @@
 close all
 clc
 
-cd('photometric data')
-load LEDLifeTestingData.mat
+% cd('photometric data')
+load Data\LEDLifeTestingData2.mat
 
 markerType = [
     'x' %open air
@@ -137,8 +137,6 @@ for modelIndex = 15%1:20
             %----------plot data---------------------
             
             for j = 1:length(opConditions)
-                jj
-                j
                 if ~isempty(opConditions{j})
                     y = tempProperty(:,opConditions{j});
                     x = nm;
@@ -224,7 +222,7 @@ for modelIndex = 15%1:20
                     '50% Dim','failure'},...
                     'Location','SouthOutside');
             end
-            export_fig(gcf,['product ' num2str(modelIndex) ' - ' opConditionsNames{jj+1} ' SPD']);%,'-r500')
+            export_fig(gcf,[pwd '\Plots\product ' num2str(modelIndex) ' - ' opConditionsNames{jj+1} ' SPD']);%,'-r500')
 %                     close(gcf)
         end
         

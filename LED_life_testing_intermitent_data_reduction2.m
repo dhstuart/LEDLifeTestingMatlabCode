@@ -4,8 +4,8 @@ clear all
 close all
 clc
 
-cd('photometric data')
-load LEDLifeTestingData2.mat
+% cd('photometric data')
+load Data\LEDLifeTestingData2.mat
 %
 properties = {
 %     'percentFlicker'
@@ -276,11 +276,8 @@ for modelIndex = 1:20
                 'LineStyle','none',...
                 'HorizontalAlignment', 'center',...
                 'FontSize', 16)
-            export_fig(gcf,['product ' num2str(modelIndex) ' - ' num2str(twofig) ' ' properties{i}]);%,'-r500')
+            export_fig(gcf,[pwd '\Plots\product ' num2str(modelIndex) ' - ' num2str(twofig) ' ' properties{i}]);%,'-r500')
             close(gcf)
-            
-            
-            
         end
         elapsedTime = toc;
         itterationsLeft = (20*length(properties)*2) - ((modelIndex-1)*length(properties)*2+(i-1)*2);
