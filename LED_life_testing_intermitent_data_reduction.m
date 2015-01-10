@@ -9,8 +9,8 @@ load Data\LEDLifeTestingData2.mat
 %
 properties = {
     %     'percentFlicker'
-    %     'luminousFlux'
-    'CCT'
+    'luminousFlux'
+    %     'CCT'
     %     'Duv'
     %     'Ra'
     %     'power'
@@ -19,17 +19,17 @@ properties = {
 
 ylabelText = {
     %     'Percent Flicker'
-    %     'Lumens'
-    'Kelvin'
+    'Lumens'
+    %     'Kelvin'
     %     'Duv'
     %     'Ra'
     %     'Watts'
     %     'Power Factor'
     };
 titleText = {
-    %         'Percent Flicker'
-    %     'Luminous Flux'
-    'Color Correlated Temperature'
+    %     'Percent Flicker'
+    'Luminous Flux'
+    %     'Color Correlated Temperature'
     %     'Duv'
     %     'Color Rendering Index'
     %     'Power'
@@ -94,7 +94,7 @@ ylimTollerance.CCT = 200;
 % ylimit.Duv = [2500 3200];
 % ylimit.Ra = [2500 3200];
 
-for modelIndex = 1:20
+for modelIndex = 1%:20
     for iProperties = 1:length(properties)
         tic
         tempProperty = vertcat(data(modelIndex,:).(properties{iProperties}))';
@@ -149,7 +149,7 @@ for modelIndex = 1:20
                 tempIndex = 1:length(opConditions);
                 opConditionsOrder = [tempIndex(tempIndex~=iOpConditionHighlighted) iOpConditionHighlighted]; %plot highlighted condition last so it's on top
                 for iOpConditions = opConditionsOrder
-                    if iOpConditions == length(opConditions)
+                    if iOpConditions == length(opConditionsOrder)
                         %----------plot manufactured rated value--------------
                         spec_color = [.5 .5 .5];
                         ratedPropertyName = ['rated_' properties{iProperties}];
@@ -184,7 +184,7 @@ for modelIndex = 1:20
                             
                             %mirror x and y points to create patch line instead of polygon
                             if iOpConditions == iOpConditionHighlighted
-
+                                
                                 handleVector{iOpConditions+1,iHours} = plot(x, y,...
                                     'Marker', markerType(plotStyle(iOpConditions,3)), ...
                                     'MarkerSize',markerSize, ...
@@ -208,7 +208,7 @@ for modelIndex = 1:20
                                 end
                             else
                                 handleVector{iOpConditions+1,iHours} = plot(x, y, ...
-                                    'Marker', 'none',... 
+                                    'Marker', 'none',...
                                     'MarkerSize',markerSize, ...
                                     'LineStyle',lineStyle{plotStyle(iOpConditions,1)}, ...
                                     'Color',pseudoTransparentColors(plotStyle(iOpConditions,2),:), ...
