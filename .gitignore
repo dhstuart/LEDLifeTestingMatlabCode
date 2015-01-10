@@ -20,6 +20,7 @@ $RECYCLE.BIN/
 # Matlab temp files
 *.asv
 *.png
+*.pdf
 
 # =========================
 # Operating System Files

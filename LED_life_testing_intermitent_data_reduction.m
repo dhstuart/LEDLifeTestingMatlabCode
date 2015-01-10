@@ -8,32 +8,32 @@ clc
 load Data\LEDLifeTestingData2.mat
 %
 properties = {
-%     'percentFlicker'
-%     'luminousFlux'
-    'CCT'
-%     'Duv'
-%     'Ra'
-%     'power'
-%     'powerFactor'
+    %     'percentFlicker'
+    'luminousFlux'
+    %     'CCT'
+    %     'Duv'
+    %     'Ra'
+    %     'power'
+    %     'powerFactor'
     };
 
 ylabelText = {
-%     'Percent Flicker'
-%     'Lumens'
-    'Kelvin'
-%     'Duv'
-%     'Ra'
-%     'Watts'
-%     'Power Factor'
+    %     'Percent Flicker'
+    'Lumens'
+    %     'Kelvin'
+    %     'Duv'
+    %     'Ra'
+    %     'Watts'
+    %     'Power Factor'
     };
 titleText = {
-%         'Percent Flicker'
-%     'Luminous Flux'
-    'Color Correlated Temperature'
-%     'Duv'
-%     'Color Rendering Index'
-%     'Power'
-%     'Power Factor'
+    %     'Percent Flicker'
+    'Luminous Flux'
+    %     'Color Correlated Temperature'
+    %     'Duv'
+    %     'Color Rendering Index'
+    %     'Power'
+    %     'Power Factor'
     };
 
 markerType = [
@@ -57,7 +57,11 @@ colors = [
     0 .8 0 %base down
     0 0 1 %base horizontal
     ];
-
+pseudoTransparentColors = [
+    1 .75 .75
+    .75 .95 .75
+    .75 .75 1
+    ];
 opConditionsNames = {
     'Manufacturer Rated Value'
     'Base-Up, Open Air, 100%'
@@ -82,7 +86,7 @@ plotStyle = [ %(markerTypeList) (lineStyle)
     % 9	1	Base-up	Open Air	always on	100%%
     ];
 
-lineWidth = [2 2];
+lineWidth = [2 1];
 markerSize = 8;
 
 ylimTollerance.luminousFlux = [0 1100];
@@ -90,7 +94,7 @@ ylimTollerance.CCT = 200;
 % ylimit.Duv = [2500 3200];
 % ylimit.Ra = [2500 3200];
 
-for modelIndex = 1:20
+for modelIndex = 1%:20
     for iProperties = 1:length(properties)
         tic
         tempProperty = vertcat(data(modelIndex,:).(properties{iProperties}))';
@@ -98,7 +102,7 @@ for modelIndex = 1:20
         orientation = vertcat(data(modelIndex,:).orientation);
         housing = vertcat(data(modelIndex,:).housing);
         dimming = vertcat(data(modelIndex,:).dimming);
-              
+        
         opConditions = { %(markerTypeList) (lineStyle)
             find(orientation=='u' & housing==0 & dimming==0),... % 1	5	Base-up	Open Air	30 on / 5 off	100%
             find(orientation=='d' & housing==0 & dimming==0),...% 2	5	Base-Down	Open Air	30 on / 5 off	100%
@@ -111,7 +115,7 @@ for modelIndex = 1:20
             % 9	1	Base-up	Open Air	always on	100%%
             };
         
-    
+        
         % %% -----------Determine when lamps burned out ------------------------
         offInd = zeros(1,31);
         for dum = 1:31
@@ -132,19 +136,7 @@ for modelIndex = 1:20
                 iOpConditionHighlighted = (iFigure-1)*len/2+iSubPlot;
                 subPlotHandle(iSubPlot) = subplot(2,2,iSubPlot);
                 
-                %----------plot manufactured rated value--------------
-                spec_color = [.5 .5 .5];
-                ratedPropertyName = ['rated_' properties{iProperties}];
-                if isfield(data(modelIndex,1),ratedPropertyName)&&~isnan(data(modelIndex,1).(ratedPropertyName)(1))
-                    ratedValue = data(modelIndex,1).(ratedPropertyName);
-                    handleVector{1,1} = plot([hours(1,1) hours(end,1)],[ratedValue ratedValue],...
-                        'Color',spec_color,...
-                        'LineWidth', 3,...
-                        'LineStyle','--');
-                    hold all
-                else
-                    ratedValue = NaN;
-                end
+                
                 
                 %----------plot data---------------------
                 initialIndexAll = tempProperty(1,:);
@@ -153,7 +145,25 @@ for modelIndex = 1:20
                 initialStdAll(modelIndex) = std(initialIndexAll(~isnan(initialIndexAll)));
                 finalMeanAll(modelIndex) = mean(finalIndexAll(~isnan(finalIndexAll)));
                 finalStdAll(modelIndex) = std(finalIndexAll(~isnan(finalIndexAll)));
-                for iOpConditions = 1:length(opConditions)
+                
+                tempIndex = 1:length(opConditions);
+                opConditionsOrder = [tempIndex(tempIndex~=iOpConditionHighlighted) iOpConditionHighlighted]; %plot highlighted condition last so it's on top
+                for iOpConditions = opConditionsOrder
+                    if iOpConditions == length(opConditionsOrder)
+                        %----------plot manufactured rated value--------------
+                        spec_color = [.5 .5 .5];
+                        ratedPropertyName = ['rated_' properties{iProperties}];
+                        if isfield(data(modelIndex,1),ratedPropertyName)&&~isnan(data(modelIndex,1).(ratedPropertyName)(1))
+                            ratedValue = data(modelIndex,1).(ratedPropertyName);
+                            handleVector{1,1} = plot([hours(1,1) hours(end,1)],[ratedValue ratedValue],...
+                                'Color',spec_color,...
+                                'LineWidth', 3,...
+                                'LineStyle','--');
+                            hold all
+                        else
+                            ratedValue = NaN;
+                        end
+                    end
                     if ~isempty(opConditions{iOpConditions})
                         y = tempProperty(:,opConditions{iOpConditions});
                         x = hours(:,opConditions{iOpConditions});
@@ -166,23 +176,20 @@ for modelIndex = 1:20
                         finalStd(modelIndex,iOpConditions) = std(iFinal(~isnan(iFinal)));
                         
                         for iHours = 1:size(y,2)
-                            if iOpConditions == 1 && iHours == 1      %no min max on first itteration
+                            if iOpConditions == opConditionsOrder(1) && iHours == 1      %no min max on first itteration
                                 minMax = [min(y(:,iHours)) max(y(:,iHours))];
                             else
                                 minMax = [min([y(:,iHours); minMax(1)]) max([y(:,iHours); minMax(2)])];   %set the limits as symmetric about the rated value
                             end
                             
                             %mirror x and y points to create patch line instead of polygon
-                            xMirrored = [x(1 : end - 1,iHours); flipud(x(:,iHours))];
-                            yMirrored = [y(1 : end - 1,iHours); flipud(y(:,iHours))];
                             if iOpConditions == iOpConditionHighlighted
-                                handleVector{iOpConditions+1,iHours} = patch(xMirrored, yMirrored, 'r', ...
-                                    'EdgeAlpha', 1, ...
-                                    'FaceColor', 'none', ...
+                                
+                                handleVector{iOpConditions+1,iHours} = plot(x, y,...
                                     'Marker', markerType(plotStyle(iOpConditions,3)), ...
                                     'MarkerSize',markerSize, ...
                                     'LineStyle',lineStyle{plotStyle(iOpConditions,1)}, ...
-                                    'EdgeColor',colors(plotStyle(iOpConditions,2),:), ...
+                                    'Color',colors(plotStyle(iOpConditions,2),:), ...
                                     'LineWidth', lineWidth(1));
                                 
                                 %-------------- mark failures -----------------
@@ -200,14 +207,12 @@ for modelIndex = 1:20
                                     end
                                 end
                             else
-                                handleVector{iOpConditions+1,iHours} = patch(xMirrored, yMirrored, 'r', ...
-                                    'EdgeAlpha', 0.05, ...
-                                    'FaceColor', 'none', ...
-                                    'Marker', 'none',... markerType(plotStyle(j,3)), ...
+                                handleVector{iOpConditions+1,iHours} = plot(x, y, ...
+                                    'Marker', 'none',...
                                     'MarkerSize',markerSize, ...
                                     'LineStyle',lineStyle{plotStyle(iOpConditions,1)}, ...
-                                    'EdgeColor',colors(plotStyle(iOpConditions,2),:), ...
-                                    'LineWidth', lineWidth(1));
+                                    'Color',pseudoTransparentColors(plotStyle(iOpConditions,2),:), ...
+                                    'LineWidth', lineWidth(2));
                             end
                             hold all
                         end
@@ -222,7 +227,7 @@ for modelIndex = 1:20
                     ylim([minMax(1)-abs(0.05*minMax(1)) minMax(2)+abs(0.05*minMax(2))])
                 elseif diff(minMax)==0
                 else
-                    ylim([ratedValue-ylimTollerance ratedValue+ylimTollerance])              
+                    ylim([ratedValue-ylimTollerance ratedValue+ylimTollerance])
                 end
                 %             set(gca,'Position', [0.13 0.11 0.5 0.8])    %ensures that axes box is the same size regardless of legend content
                 xlabel('Hours')
@@ -261,7 +266,7 @@ for modelIndex = 1:20
                 'LineStyle','none',...
                 'HorizontalAlignment', 'center',...
                 'FontSize', 16)
-            export_fig(gcf,[pwd '\Plots\product ' num2str(modelIndex) ' - ' num2str(iFigure) ' ' properties{iProperties}]);%,'-r500')
+            export_fig(gcf,[pwd '\Plots\product ' num2str(modelIndex) ' - ' num2str(iFigure) ' ' properties{iProperties} '.pdf']);%,'-r500')
             close(gcf)
         end
         elapsedTime = toc;
