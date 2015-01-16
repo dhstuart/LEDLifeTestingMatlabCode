@@ -1,18 +1,19 @@
-clear all
+% clear all
 close all
 clc
 
-cd('C:\Users\dhstuart\Dropbox\CLTC\LED life testing');
+cd ..
+% cd Data
 % [a,b,c] = xlsread('Copy of LED test lab lamp location sheet5.xlsx','Sheet1');
 % [d,e,f] = xlsread('Copy of LED test lab lamp location sheet5.xlsx','orientation');
 % [g,h,k] = xlsread('Copy of LED test lab lamp location sheet5.xlsx','housing');
 % [l,m,n] = xlsread('Copy of LED test lab lamp location sheet5.xlsx','product key');
 
-[a,b,c] = xlsread('lamp location and parameters.xlsx','location');
-[d,e,f] = xlsread('lamp location and parameters.xlsx','orientation');
-[g,h,k] = xlsread('lamp location and parameters.xlsx','housing');
-[l,m,n] = xlsread('lamp location and parameters.xlsx','product key');
-[o,p,q] = xlsread('lamp location and parameters.xlsx','dimming');
+[a,b,c] = xlsread('\Data\lamp location and parameters.xlsx','location');
+[d,e,f] = xlsread('\Data\lamp location and parameters.xlsx','orientation');
+[g,h,k] = xlsread('\Data\lamp location and parameters.xlsx','housing');
+[l,m,n] = xlsread('\Data\lamp location and parameters.xlsx','product key');
+[o,p,q] = xlsread('\Data\lamp location and parameters.xlsx','dimming');
 layout = c(2:65,4:13);
 orientation_temp = e(2:65,4:13);
 housing_temp = k(2:65,4:13);
@@ -52,6 +53,9 @@ rated_power = l(:,5);
 rated_luminousFlux = l(:,6);
 rated_CCT = l(:,7);
 rated_Ra = l(:,8);
+manufacturer = m(2:end,2);
+productName = m(4:end,2);
+lampShapeSize = m(3:end,2);
 
 for i = 1:8
     for j = 1:8
@@ -85,6 +89,8 @@ tm.rated_power = rated_power;
 tm.rated_luminousFlux = rated_luminousFlux;
 tm.rated_CCT = rated_CCT;
 tm.rated_Ra = rated_Ra;
-cd('C:\Users\dhstuart\Dropbox\CLTC\LED life testing\photometric data')
-save('testMatrix.mat','tm')
+tm.manufacturer = manufacturer;
+tm.productName = productName;
+tm.lampShapeSize = lampShapeSize;
 
+save('Data\testMatrix.mat','tm')
