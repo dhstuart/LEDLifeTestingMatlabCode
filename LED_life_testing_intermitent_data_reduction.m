@@ -4,6 +4,9 @@ clear all
 close all
 clc
 
+
+% addpath Library\export_fig
+% addpath Library\export_fig\.ignore
 % cd('photometric data')
 load Data\LEDLifeTestingData2.mat
 %
