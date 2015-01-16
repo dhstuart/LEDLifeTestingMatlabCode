@@ -31,11 +31,14 @@
 close all
 
 clc
-% clear all
+clear all
+
 p = path;
 p1 = genpath([pwd '\Functions']);
 p2 = genpath([pwd '\Data']);
 addpath([p1 p2]);
+
+resetPath = onCleanup(@()path(p));      %this will reset the path the next time "close all" is used
 
 
 %need to run the following first:
@@ -78,6 +81,9 @@ for model = 1:20
         data(model,sample).rack = tm.rack(tmIndex);
         data(model,sample).branch = tm.branch(tmIndex);
         data(model,sample).socket = tm.socket(tmIndex);
+        data(model,sample).manufacturer = tm.manufacturer(model);
+        data(model,sample).productName = tm.productName(model);
+        data(model,sample).lampShapeSize = tm.lampShapeSize(model);
         % tempW = find(tm.product==model);
         data(model,sample).rated_power = tm.rated_power(model);
         data(model,sample).rated_luminousFlux = tm.rated_luminousFlux(model);
@@ -117,7 +123,7 @@ for i = 1:length(hours)
             disp(['hours ' num2str(hours(i)) ' - model ' num2str(model) ' - sample ' num2str(sample)])
             %             cd([directory '\' folderList{i}]);
             %             files = dir('*.csv');
-%             cd(current)
+            %             cd(current)
             fileName = ['LT ' sprintf('%02.0f',model) '-' sprintf('%02.0f',sample) '.csv'];
             %             fileList = {files.name}';
             %             for j = 1:length(fileList)

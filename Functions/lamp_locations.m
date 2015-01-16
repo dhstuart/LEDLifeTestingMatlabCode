@@ -1,7 +1,9 @@
-% clear all
+clear all
 close all
 clc
 
+% x = which('lamp_locations');
+% ipath = pwd;
 cd ..
 % cd Data
 % [a,b,c] = xlsread('Copy of LED test lab lamp location sheet5.xlsx','Sheet1');
@@ -54,8 +56,8 @@ rated_luminousFlux = l(:,6);
 rated_CCT = l(:,7);
 rated_Ra = l(:,8);
 manufacturer = m(2:end,2);
-productName = m(4:end,2);
-lampShapeSize = m(3:end,2);
+productName = m(2:end,3);
+lampShapeSize = m(2:end,4);
 
 for i = 1:8
     for j = 1:8

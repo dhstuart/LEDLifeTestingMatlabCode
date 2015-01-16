@@ -13,11 +13,11 @@ names = fieldnames(data(1,1));
 for i = 1:size(data,1)
     for j = 1:size(data,2)  
         temp = struct2cell(data(i,j));
-        index = (i-1)*size(data,2)+j
+        index = (i-1)*size(data,2)+j;
         a(index,:) = temp(columns)';
         
     end
 end
 
 tableOut = [names(columns)';a];
-cell2csv('LedLifeTestingMetadata.csv',tableOut)
+% cell2csv('LedLifeTestingMetadata.csv',tableOut)
