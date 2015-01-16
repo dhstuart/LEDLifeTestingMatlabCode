@@ -56,8 +56,8 @@ rated_luminousFlux = l(:,6);
 rated_CCT = l(:,7);
 rated_Ra = l(:,8);
 manufacturer = m(2:end,2);
-productName = m(2:end,3);
-lampShapeSize = m(2:end,4);
+lampShapeSize = m(2:end,3);
+productName = m(2:end,4);
 
 for i = 1:8
     for j = 1:8
