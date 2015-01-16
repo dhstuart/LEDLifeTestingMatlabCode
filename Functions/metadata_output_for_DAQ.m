@@ -8,7 +8,7 @@ clc
 % cd('photometric data')
 cd ..
 load Data\LEDLifeTestingData2.mat
-columns = [1:2 4:9];
+columns = [1:2 4:12];
 names = fieldnames(data(1,1));
 for i = 1:size(data,1)
     for j = 1:size(data,2)  
@@ -20,4 +20,4 @@ for i = 1:size(data,1)
 end
 
 tableOut = [names(columns)';a];
-% cell2csv('LedLifeTestingMetadata.csv',tableOut)
+cell2csv('LedLifeTestingMetadata.csv',tableOut)

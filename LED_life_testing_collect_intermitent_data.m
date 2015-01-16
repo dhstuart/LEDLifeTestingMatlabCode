@@ -81,9 +81,10 @@ for model = 1:20
         data(model,sample).rack = tm.rack(tmIndex);
         data(model,sample).branch = tm.branch(tmIndex);
         data(model,sample).socket = tm.socket(tmIndex);
-        data(model,sample).manufacturer = tm.manufacturer(model);
-        data(model,sample).productName = tm.productName(model);
-        data(model,sample).lampShapeSize = tm.lampShapeSize(model);
+        
+        data(model,sample).manufacturer = tm.manufacturer{model};
+        data(model,sample).productName = tm.productName{model};
+        data(model,sample).lampShapeSize = tm.lampShapeSize{model};
         % tempW = find(tm.product==model);
         data(model,sample).rated_power = tm.rated_power(model);
         data(model,sample).rated_luminousFlux = tm.rated_luminousFlux(model);
