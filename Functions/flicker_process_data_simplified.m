@@ -47,11 +47,13 @@ data = temp.data;
 % data = cellfun(@str2num,temp3);
 
 %% ------- collect data from header -------------
+if sum(strcmp(header_titles,'Format Version'))  %when format version tag was added, dark data is included in file. Select light only
+    data = data(:,2);
+end
 dt = str2num(header_data{strcmp(header_titles,'dt')});
 t = 0:dt:dt*(length(data)-1);
 model = header_data{strcmp(header_titles,'model')};
-dim_level = str2num(header_data{strcmp(header_titles,'dim level')});
-dimmer_type = header_data{strcmp(header_titles,'dimmer type')};
+
 % disp(['MODEL: ' model '     DIMMER TYPE: ' dimmer_type '     DIM LEVEL: ' num2str(dim_level)])
 
 if mean(data)<0
