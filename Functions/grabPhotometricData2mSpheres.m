@@ -3,12 +3,15 @@ clear all
 close all
 
 directory = 'C:\Users\dhstuart\Dropbox\CLTC\LED life testing\photometric data';
-filename = [directory '\Lifetesting Summary 20140908.xlsx'];
+% filename = [directory '\Lifetesting Summary 20140908.xlsx'];
+filename = [directory '\Lifetesting Summary 20150514.xlsx'];
 sheets = {
     'Baseline'
     '1000'
     '2000'
-    '3000'};
+    '3000'
+    '4000'
+    '5000'};
 
 for i = 1:length(sheets)
     [a,b,c] = xlsread(filename,sheets{i});

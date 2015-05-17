@@ -4,11 +4,14 @@ clear all
 close all
 
 directory = 'C:\Users\dhstuart\Dropbox\CLTC\LED life testing\photometric data';
-filename = [directory '\LED Lifetesting Electrical Data - Olga 1M 20141218.xlsx'];
+% filename = [directory '\LED Lifetesting Electrical Data - Olga 1M 20141218.xlsx'];
+filename = [directory '\LED Lifetesting Electrical Data - Olga 1M 20150514.xlsx'];
 sheets = {
     '1000 Hours'
     '2000 Hours'
     '3000 Hours'
+    '4000 Hours'
+    '5000 Hours'
     };
 
 em.product = zeros(620,length(sheets)+1);

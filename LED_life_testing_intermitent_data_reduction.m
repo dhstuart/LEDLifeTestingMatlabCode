@@ -1,4 +1,5 @@
 % LED_life_testing_data_reduction.m
+%export fig only works properly in matlab 14a and before
 
 clear all
 close all
@@ -8,35 +9,35 @@ clc
 % addpath Library\export_fig
 % addpath Library\export_fig\.ignore
 % cd('photometric data')
-load Data\LEDLifeTestingData2.mat
+load Data\LEDLifeTestingData3.mat
 %
 properties = {
-    %     'percentFlicker'
+        'percentFlicker'
     'luminousFlux'
-    %     'CCT'
-    %     'Duv'
-    %     'Ra'
-    %     'power'
-    %     'powerFactor'
+        'CCT'
+        'Duv'
+        'Ra'
+        'power'
+        'powerFactor'
     };
 
 ylabelText = {
-    %     'Percent Flicker'
+        'Percent Flicker'
     'Lumens'
-    %     'Kelvin'
-    %     'Duv'
-    %     'Ra'
-    %     'Watts'
-    %     'Power Factor'
+        'Kelvin'
+        'Duv'
+        'Ra'
+        'Watts'
+        'Power Factor'
     };
 titleText = {
-    %     'Percent Flicker'
+        'Percent Flicker'
     'Luminous Flux'
-    %     'Color Correlated Temperature'
-    %     'Duv'
-    %     'Color Rendering Index'
-    %     'Power'
-    %     'Power Factor'
+        'Color Correlated Temperature'
+        'Duv'
+        'Color Rendering Index'
+        'Power'
+        'Power Factor'
     };
 
 markerType = [
@@ -97,7 +98,7 @@ ylimTollerance.CCT = 200;
 % ylimit.Duv = [2500 3200];
 % ylimit.Ra = [2500 3200];
 
-for modelIndex = 1%:20
+for modelIndex = 1:10%:20
     for iProperties = 1:length(properties)
         tic
         tempProperty = vertcat(data(modelIndex,:).(properties{iProperties}))';
@@ -269,7 +270,7 @@ for modelIndex = 1%:20
                 'LineStyle','none',...
                 'HorizontalAlignment', 'center',...
                 'FontSize', 16)
-            export_fig(gcf,[pwd '\Plots\product ' num2str(modelIndex) ' - ' num2str(iFigure) ' ' properties{iProperties} '.pdf']);%,'-r500')
+            export_fig(gcf,[pwd '\Plots\product ' num2str(modelIndex) ' - ' num2str(iFigure) ' ' properties{iProperties} '.png']);%,'-r500')
             close(gcf)
         end
         elapsedTime = toc;

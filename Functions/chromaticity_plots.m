@@ -1,10 +1,10 @@
 
-% clear all
-% close all
+clear all
+close all
 clc
 
 cd('photometric data')
-load LEDLifeTestingData.mat
+load LEDLifeTestingData3.mat
 
 
 opConditionsNames = {

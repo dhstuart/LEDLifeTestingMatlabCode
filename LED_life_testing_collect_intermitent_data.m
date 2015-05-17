@@ -47,17 +47,21 @@ resetPath = onCleanup(@()path(p));      %this will reset the path the next time 
 
 % current = 'C:\Users\dhstuart\Dropbox\CLTC\LED life testing\photometric data';
 directory = 'C:\Users\dhstuart\Box Sync';
-hours = [0 1000 2000 3000];
+hours = [0 1000 2000 3000 4000 5000];
 folderListOneMeter = {
     'LT Photometric - 0000 hr Data'
     'LT Photometric - 1000 hr Data'
     'LT Photometric - 2000 hr Data'
-    'LT Photometric - 3000 hr Data'};
+    'LT Photometric - 3000 hr Data'
+    'LT Photometric - 4000 hr Data'
+    'LT Photometric - 5000 hr Data'};
 folderListFlicker = {
     'LT Flicker - 0000 hr Data'
     'LT Flicker - 1000 hr Data'
     'LT Flicker - 2000 hr Data'
-    'LT Flicker - 3000 hr Data'};
+    'LT Flicker - 3000 hr Data'
+    'LT Flicker - 4000 hr Data'
+    'LT Flicker - 5000 hr Data'};
 
 %%
 % cd(current)
@@ -65,7 +69,7 @@ load('testMatrix.mat'); %in "photometric data" folder
 load('electricalData.mat'); %in "photometric data" folder
 load('photometricData2mSpheres.mat'); %in "photometric data" folder
 
-for model = 1:20
+for model = 1:10
     for sample = 1:31
         %                 if i == 2 %only  need to add these fields once, and this skips the first because there is no baseline data
         data(model,sample).model = model;
@@ -103,7 +107,7 @@ for model = 1:20
         %add original photometric data from 2m spheres
         tempFieldNames = fieldnames(photometricData2mSpheres);
         for i = 1:length(tempFieldNames)
-            for j = 1:4 %loop over hours
+            for j = 1:length(hours) %loop over hours
                 temp = photometricData2mSpheres(j).(tempFieldNames{i})(emIndex,:);
                 if ~isnan(temp)
                     data(model,sample).(tempFieldNames{i})(:,j) = temp;
@@ -115,10 +119,11 @@ end
 
 %% ------------------- Add one meter sphere and flicker data ---------------------------
 allFieldNames = fieldnames(data(1,1));
-allFieldNames = allFieldNames(14:end);  %only include fields that weren't already added via the test matrix
+% allFieldNames = allFieldNames(14:end);  %only include fields that weren't already added via the test matrix
+allFieldNames = allFieldNames(17:end);  %only include fields that weren't already added via the test matrix
 flickerFieldNames = {'fundFreqUnfilt';'fundFreqFilt';'SNR';'flickerIndex';'percentFlicker';'averageLevel'};
 for i = 1:length(hours)
-    for model = 1:20
+    for model = 1:10
         for sample = 1:31
             tic
             disp(['hours ' num2str(hours(i)) ' - model ' num2str(model) ' - sample ' num2str(sample)])
@@ -164,16 +169,20 @@ for i = 1:length(hours)
                     data(model,sample).(flickerFieldNames{dum})(:,i) = NaN;
                 end
             end
-            %             end
+
             elapsedTime = toc;
             itterationsLeft = (length(hours)*20*30) - ((i-1)*(20)*(30)+(model-1)*30+(sample-1));
             timeLeft = itterationsLeft*toc/60;
             disp(['time left is ' num2str(timeLeft) ' minutes'])
+            %% ------------- Correct DUV ----------------------
+            mspd = [[360:1000]' data(model,sample).SPD(:,i)];
+            [~,~,~,~,~,duv] = pspectro(mspd);
+            data(model,sample).Duv(i) = duv;
         end
         
     end
 end
 
 %%
-save('Data\LEDLifeTestingData2.mat','data')
+save('Data\LEDLifeTestingData3.mat','data')
 path(p);

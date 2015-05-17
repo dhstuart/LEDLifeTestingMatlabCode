@@ -5,7 +5,7 @@ close all
 clc
 
 % cd('photometric data')
-load Data\LEDLifeTestingData2.mat
+load Data\LEDLifeTestingData3.mat
 
 markerType = [
     'x' %open air
