@@ -13,31 +13,31 @@ load Data\LEDLifeTestingData3.mat
 %
 properties = {
         'percentFlicker'
-    'luminousFlux'
-        'CCT'
-        'Duv'
-        'Ra'
-        'power'
-        'powerFactor'
+%     'luminousFlux'
+%         'CCT'
+%         'Duv'
+%         'Ra'
+%         'power'
+%         'powerFactor'
     };
 
 ylabelText = {
         'Percent Flicker'
-    'Lumens'
-        'Kelvin'
-        'Duv'
-        'Ra'
-        'Watts'
-        'Power Factor'
+%     'Lumens'
+%         'Kelvin'
+%         'Duv'
+%         'Ra'
+%         'Watts'
+%         'Power Factor'
     };
 titleText = {
         'Percent Flicker'
-    'Luminous Flux'
-        'Color Correlated Temperature'
-        'Duv'
-        'Color Rendering Index'
-        'Power'
-        'Power Factor'
+%     'Luminous Flux'
+%         'Color Correlated Temperature'
+%         'Duv'
+%         'Color Rendering Index'
+%         'Power'
+%         'Power Factor'
     };
 
 markerType = [
@@ -173,6 +173,7 @@ for modelIndex = 1:10%:20
                         x = hours(:,opConditions{iOpConditions});
                         %get statistics on delta on properties
                         iInitial = y(1,:);
+%                         iInitial = y(2,:);      %for percent flicker with no initial measurements                        
                         iFinal = y(end,:);
                         initialMean(modelIndex,iOpConditions) = mean(iInitial(~isnan(iInitial)));
                         initialStd(modelIndex,iOpConditions) = std(iInitial(~isnan(iInitial)));
@@ -186,6 +187,8 @@ for modelIndex = 1:10%:20
                                 minMax = [min([y(:,iHours); minMax(1)]) max([y(:,iHours); minMax(2)])];   %set the limits as symmetric about the rated value
                             end
                             
+                            
+
                             %mirror x and y points to create patch line instead of polygon
                             if iOpConditions == iOpConditionHighlighted
                                 

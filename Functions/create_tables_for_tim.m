@@ -4,23 +4,27 @@ clear all
 close all
 clc
 
-cd('photometric data')
-load LEDLifeTestingData2.mat
+% cd('photometric data')
+cd('..\data')
+load LEDLifeTestingData3.mat
 
 allFieldNames = fieldnames(data(1,1));
-singleHrNames = allFieldNames([1 2 4:13]);
-shortFieldNames = allFieldNames([3 14:46 48:54]);
+% singleHrNames = allFieldNames([1 2 4:13]);    %old version of field names
+singleHrNames = allFieldNames([1 2 4:9 13:16]);
+% shortFieldNames = allFieldNames([3 14:46 48:54]);     %old version of field names
+shortFieldNames = allFieldNames([3 17:49 51:57]);
 spd = 360:1000;
 header = [singleHrNames' shortFieldNames' num2cell(spd)];
 out2 = [];
-for hours = 1:4
+for hours = 1:6
     dum=0;
-    for modelIndex = 1%:20
-        for sampleIndex = 1%:31
+    for modelIndex = 1:10%:20
+        for sampleIndex = 1:31
             dum=dum+1;
             out = [];
             for field = 1:length(singleHrNames)
-                out(field) = num2str(data(modelIndex,sampleIndex).(singleHrNames{field}));
+%                 out(field) = num2str(data(modelIndex,sampleIndex).(singleHrNames{field}))  %not sure why this needed to be a string?
+                out(field) = data(modelIndex,sampleIndex).(singleHrNames{field});
             end
             
             for field = 1+length(singleHrNames):length(shortFieldNames)+length(singleHrNames)
@@ -39,5 +43,5 @@ for hours = 1:4
             
         end
     end
-%     xlswrite('LEDLifeTestingData.xlsx',out2,hours)
+    xlswrite('LEDLifeTestingData2.xlsx',out2,hours)
 end
